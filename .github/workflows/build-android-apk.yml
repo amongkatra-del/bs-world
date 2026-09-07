@@ -19,25 +19,29 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: bsworld_v08/package-lock.json
 
       - name: Install dependencies
+        working-directory: bsworld_v08
         run: npm install
 
       - name: Create Supabase environment file
+        working-directory: bsworld_v08
         run: |
           printf 'EXPO_PUBLIC_SUPABASE_URL=%s\n' "${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}" > .env
           printf 'EXPO_PUBLIC_SUPABASE_ANON_KEY=%s\n' "${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
 
       - name: Generate Android project
+        working-directory: bsworld_v08
         run: npx expo prebuild --platform android --non-interactive
 
       - name: Build release APK
-        working-directory: android
+        working-directory: bsworld_v08/android
         run: ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: bs-world-android-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: bsworld_v08/android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
