@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { router } from "expo-router";
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import { supabase } from "@/lib/supabase";
 import { theme } from "@/lib/theme";
 
@@ -12,17 +19,23 @@ export default function Signup() {
   const [busy, setBusy] = useState(false);
 
   async function create() {
-    if (!name || !username || !email || !password) {
-      return Alert.alert("Check details", "Enter all fields.");
+    if (!supabase) {
+      return Alert.alert(
+        "Setup required",
+        "Add the Supabase environment variables first."
+      );
     }
 
-    if (password.length < 6) {
-      return Alert.alert("Password", "Password must be at least 6 characters.");
+    if (!name || !username || !email || password.length < 6) {
+      return Alert.alert(
+        "Check details",
+        "Enter all fields; password must be at least 6 characters."
+      );
     }
 
     setBusy(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: {
@@ -30,6 +43,7 @@ export default function Signup() {
           display_name: name.trim(),
           username: username.trim().toLowerCase(),
         },
+        emailRedirectTo: "bsworld://auth/callback",
       },
     });
 
@@ -39,21 +53,25 @@ export default function Signup() {
       return Alert.alert("Sign up failed", error.message);
     }
 
-    Alert.alert(
-      "Account created",
-      "Check your email to confirm your account.",
-      [
-        {
-          text: "OK",
-          onPress: () => router.replace("/login"),
-        },
-      ]
-    );
+    if (data.user) {
+      Alert.alert(
+        "Account created",
+        "Check your email to confirm your account.",
+        [
+          {
+            text: "OK",
+            onPress: () => router.replace("/login"),
+          },
+        ]
+      );
+    }
   }
 
   return (
     <View style={s.root}>
-      <Text style={s.brand}>bs<Text style={{ color: theme.purple }}>.</Text>world</Text>
+      <Text style={s.brand}>
+        bs<Text style={s.dot}>.</Text>world
+      </Text>
 
       <Text style={s.title}>Create account</Text>
 
@@ -99,12 +117,14 @@ export default function Signup() {
         disabled={busy}
       >
         <Text style={s.buttonText}>
-          {busy ? "Creating..." : "Sign Up"}
+          {busy ? "Creating…" : "Sign Up"}
         </Text>
       </Pressable>
 
       <Pressable onPress={() => router.replace("/login")}>
-        <Text style={s.link}>Already have an account? Log in</Text>
+        <Text style={s.link}>
+          Already have an account? Log in
+        </Text>
       </Pressable>
     </View>
   );
@@ -117,6 +137,7 @@ const s = StyleSheet.create({
     padding: 24,
     justifyContent: "center",
   },
+
   brand: {
     fontSize: 40,
     fontWeight: "800",
@@ -124,12 +145,18 @@ const s = StyleSheet.create({
     textAlign: "center",
     marginBottom: 35,
   },
+
+  dot: {
+    color: theme.purple,
+  },
+
   title: {
     color: "#fff",
     fontSize: 26,
     fontWeight: "800",
     marginBottom: 20,
   },
+
   input: {
     height: 54,
     borderRadius: 14,
@@ -138,25 +165,27 @@ const s = StyleSheet.create({
     backgroundColor: theme.card,
     color: "#fff",
     paddingHorizontal: 16,
-    marginTop: 10,
+    marginBottom: 13,
   },
+
   button: {
     height: 54,
     borderRadius: 15,
     backgroundColor: theme.purple,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 18,
+    marginTop: 8,
   },
+
   buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "800",
   },
+
   link: {
     color: "#B990FF",
     textAlign: "center",
-    marginTop: 20,
-    fontSize: 16,
+    marginTop: 22,
   },
 });
