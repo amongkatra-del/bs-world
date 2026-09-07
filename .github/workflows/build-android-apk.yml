@@ -23,6 +23,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Create Supabase environment file
+        run: |
+          printf 'EXPO_PUBLIC_SUPABASE_URL=%s\n' "${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}" > .env
+          printf 'EXPO_PUBLIC_SUPABASE_ANON_KEY=%s\n' "${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
+
       - name: Generate Android project
         run: npx expo prebuild --platform android --non-interactive
 
