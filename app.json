@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "bs.world",
+    "slug": "bs-world",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "bsworld",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "plugins": [
+      "expo-router",
+      "expo-image-picker",
+      "expo-document-picker"
+    ],
+    "android": {
+      "package": "world.bs.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#070B2A"
+      },
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "world.bs.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "bs.world uses the camera for video calls and media sharing.",
+        "NSMicrophoneUsageDescription": "bs.world uses the microphone for voice and video calls.",
+        "NSPhotoLibraryUsageDescription": "bs.world uses your photo library when you choose media to share."
+      }
+    }
+  }
+}
